@@ -1,7 +1,7 @@
 import openai
 # Set up your OpenAI API key
 openai.organization = "org-gNs8dlZZWIX5CKD8WDYzaipx"
-openai.api_key = "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"
+openai.api_key = 
 import openai
 import numpy as np
 import pandas as pd
@@ -75,15 +75,15 @@ def text_analyzer(text):
 
 
 def fact_checker(query):
-    data = pd.read_excel("data.csv")
-    evidence = pd.read_excel("evidence.csv")
+    data = pd.read_excel("data.xlsx")
+    evidence = pd.read_excel("evidence.xlsx")
     reviews = data[data.type == 1]['text'].values
     evidences = evidence['text'].values
     links = evidence['links'].values
 
     sbert_model = SentenceTransformer('sentence-transformers/msmarco-distilbert-base-v4')
     top_reviews = []
-    cos = [sentence_bert_compute_similarity(sbert_model, query, x) for x in reviews]
+    cos = [sentence_bert_compute_similarity(sbert_model, query, x).item() for x in reviews]
     cos = np.array(cos)
     top = cos.argsort()[-2:][::-1]
     texts = [reviews[i] for i in top]
@@ -92,13 +92,14 @@ def fact_checker(query):
         prompt_to_check = text_analyzer(text)
         classifications = classify_claims(prompt_to_check, evidences)
         dict = {'review': text, 'links': []}
-        for i, c in enumerate(classifications):
-            if c:
-                dict['links'].append(links[i])
+        for c1 in classifications:
+            for i, c2 in enumerate(c1):
+                if c2 and links[i] not in dict['links']:
+                    dict['links'].append(links[i])
         top_reviews.append(dict)
 
     return top_reviews
 
 
 if __name__ == '__main__':
-    pass
+    fact_checker('My child has diabetes, which dietitian can help me')
