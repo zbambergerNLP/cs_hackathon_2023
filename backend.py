@@ -34,8 +34,8 @@ def analyze_text(text: str) -> typing.Tuple[str, typing.List[str]]:
 
 if __name__ == '__main__':
     # Set up your OpenAI API key
-    openai.organization = "zbamberger"
-    openai.api_key = "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"
+    openai.organization = "org-gNs8dlZZWIX5CKD8WDYzaipx"
+    openai.api_key = "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"
 
     # Define the prompt and parameters for the ChatGPT model
     prompt = "text: Diet is the single most significant risk factor for disability and premature death. Patients and " \
