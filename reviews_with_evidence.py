@@ -1,7 +1,8 @@
 import openai
 # Set up your OpenAI API key
 openai.organization = "org-gNs8dlZZWIX5CKD8WDYzaipx"
-openai.api_key = 
+openai.api_key = "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"
+
 import openai
 import numpy as np
 import pandas as pd
@@ -71,12 +72,12 @@ def text_analyzer(text):
         treatments[i] = treatment.split('.')[1]
 
     prompts_to_check = [f"{treatment} is a treatment for {disease}" for treatment in treatments]
-    return prompts_to_check
+    return prompts_to_check,treatments
 
 
 def fact_checker(query):
-    data = pd.read_excel("data.xlsx")
-    evidence = pd.read_excel("evidence.xlsx")
+    data = pd.read_excel("data/data.xlsx")
+    evidence = pd.read_excel("data/evidence.xlsx")
     reviews = data[data.type == 1]['text'].values
     evidences = evidence['text'].values
     links = evidence['links'].values
@@ -89,9 +90,9 @@ def fact_checker(query):
     texts = [reviews[i] for i in top]
 
     for text in texts:
-        prompt_to_check = text_analyzer(text)
+        prompt_to_check,treatments = text_analyzer(text)
         classifications = classify_claims(prompt_to_check, evidences)
-        dict = {'review': text, 'links': []}
+        dict = {'review': text, 'links': [], "prompts": treatments}
         for c1 in classifications:
             for i, c2 in enumerate(c1):
                 if c2 and links[i] not in dict['links']:
@@ -103,3 +104,4 @@ def fact_checker(query):
 
 if __name__ == '__main__':
     fact_checker('My child has diabetes, which dietitian can help me')
+
